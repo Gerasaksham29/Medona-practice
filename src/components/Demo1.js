@@ -43,5 +43,5 @@ class Demo1 extends Component {
 }
 
 export default GoogleApiWrapper({
-    apiKey: 'AIzaSyBeXrdBMPxcgslP1dieVYiCERiNBdmj3iM'
+    apiKey: 'No_key'
 })(Demo1);
