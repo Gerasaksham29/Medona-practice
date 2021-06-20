@@ -1,7 +1,11 @@
 import React from 'react'
 import Cards from '../components/Cards'
 import { Row, Col, CardDeck } from 'react-bootstrap'
+<<<<<<< HEAD
 import Searchbar from '../components/Searchbar'
+=======
+import './Homescreen.css'
+>>>>>>> c46550cb84273e1cd18ab49957122ca8ca98da68
 
 const HomeScreen = () => {
     return (
