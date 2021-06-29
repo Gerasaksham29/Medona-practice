@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { Map, Marker, GoogleApiWrapper, InfoWindow } from 'google-maps-react';
 import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from 'react-places-autocomplete';
 import { Form, Button } from 'react-bootstrap';
-import './SearchBox.css';
+import './searchbar.css';
+import * as stores from './stores';
+import './sidebar.css';
 
+const google = window.google;
 const style = {
 
   height: '100vh'
@@ -26,11 +29,13 @@ export class MapContainer extends Component {
         lat: null,
         lng: null
       },
+      setZoom: 10,
 
 
     };
     this.getLocation = this.getLocation.bind(this);
     this.showPosition = this.showPosition.bind(this);
+    this.Locate = this.Locate.bind(this);
   }
   getLocation() {
     if (navigator.geolocation) {
@@ -66,6 +71,33 @@ export class MapContainer extends Component {
         alert("An unknown error occurred.");
     }
   }
+
+  onMarkerClick = (props, marker, e) =>
+    this.setState({
+      selectedPlace: props,
+      activeMarker: marker,
+      showingInfoWindow: true,
+      setZoom: 13
+    });
+  Locate(lati, longi) {
+    this.setState({
+      mapCenter: {
+        lat: lati,
+        lng: longi,
+      },
+      setZoom: 13,
+    });
+    console.log('clicked');
+  }
+
+  onMapClicked = (props) => {
+    if (this.state.showingInfoWindow) {
+      this.setState({
+        showingInfoWindow: false,
+        activeMarker: null
+      })
+    };
+  }
   handleChange = address => {
     this.setState({ address });
   };
@@ -84,6 +116,10 @@ export class MapContainer extends Component {
   };
 
   render() {
+    const point = {
+      lat: this.state.mapCenter.lat,
+      lng: this.state.mapCenter.lng
+    }
     return (
       <div id='googleMaps'>
         <PlacesAutocomplete
@@ -134,7 +170,7 @@ export class MapContainer extends Component {
 
         <Map
           google={this.props.google}
-          style={style}
+
           initialCenter={{
             lat: this.state.mapCenter.lat,
             lng: this.state.mapCenter.lng
@@ -143,20 +179,74 @@ export class MapContainer extends Component {
             lat: this.state.mapCenter.lat,
             lng: this.state.mapCenter.lng
           }}
-
+          style={style}
+          zoom={this.state.setZoom}
+          // bounds = { bounds}
+          centerAroundCurrentLocation={true}
 
         >
-          <Marker
+          {stores.features.map((stor) =>
+            <Marker
+              key={stor.properties.storeid}
+              position={{
+                lat: stor.geometry.coordinates[1],
+                lng: stor.geometry.coordinates[0]
+              }}
+              onClick={this.onMarkerClick}
+              name={stor.properties.name}
+              description={stor.properties.hours}
+            // animation={google.maps.Animation.DROP}
+            />
+          )}
+
+          < Marker
             position={{
               lat: this.state.mapCenter.lat,
               lng: this.state.mapCenter.lng
-            }} />
+            }}
+            onClick={this.onMarkerClick}
+            name={'Your current Location'}
+            // animation={google.maps.Animation.DROP}
+          />
+          <InfoWindow
+            marker={this.state.activeMarker}
+            onOpen={this.windowHasOpened}
+            onClose={this.windowHasClosed}
+            visible={this.state.showingInfoWindow}
+
+          >
+            <div>
+              <h3>{this.state.selectedPlace.name}</h3>
+              <p>{this.state.selectedPlace.description}</p>
+              {/* <p>{this.state.selectedPlace.description}</p> */}
+            </div>
+          </InfoWindow>
         </Map>
+        <section className="sidebar" >
+          <div className="sidebar-inner">
+
+            <ul>
+              {stores.features.map((s) =>
+                <li className="listitem ">Store : {s.properties.storeid}
+                  <h3>{s.properties.name}</h3>
+                  <p>{s.properties.phone}</p>
+                  {/* {console.log(s.geometry.coordinates)} */}
+
+                  < button className='btn btn2 btn-info' onClick={() => this.Locate(s.geometry.coordinates[1], s.geometry.coordinates[0])}> Locate
+
+                  </button >
+                </li>
+              )}
+            </ul>
+
+
+          </div>
+        </section>
       </div>
     )
   }
 }
 
 export default GoogleApiWrapper({
-  apiKey: ('')
+  apiKey: ('AIzaSyAhcqvAwBDwBt2_l9GSEfm9SPK1-wscFVs')
 })(MapContainer)

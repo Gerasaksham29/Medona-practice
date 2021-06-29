@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 
-import Map from "./components/Map";
-//import Demo1 from "./components/Demo1";
+import MapContainer from "./components/Storelocator";
+
 
 class App extends Component {
   constructor(props) {
@@ -18,9 +18,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <h4>Using geolocation JavaScript API in React</h4>
-        <Map />
-        {/*<Demo1 />*/}
+        
+        <MapContainer />
+
       </div>
     );
   }
