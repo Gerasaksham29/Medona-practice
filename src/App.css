@@ -1,5 +1,13 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
-
+.Foot {
+    position: flex-end;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: medium;
+    background-color: rgb(240, 240, 240);
+    text-align: center;
+}
